@@ -166,12 +166,13 @@ void dibujar1_3(const tMina& mina){
 
 void dibuja3x3(tCasilla casilla, tPlanoCaracteres caracteres, tPlanoColores colores, int i, int j){
     system("cls"); 
+    tColor color = colorCasilla(casilla);
 
     for(int ii = 0; ii < 3; ii++ ) {
         for(int jj = 0; jj < 3; jj++) {
-            caracteres[i*3+ii][j*3+jj]
+            caracteres[i*3+ii][j*3+jj];
+            colores[i*3+ii][j*3+jj] = color;
         }
-        cout << endl;
     }
 
 }
