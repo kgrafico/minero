@@ -128,11 +128,13 @@ void dibujar1_1(const tMina& mina) {
 }
 
 void dibujar1_3(const tMina& mina){
+    system("cls");
 
 }
 
 void dibuja3x3(tCasilla casilla, tPlanoCaracteres caracteres, tPlanoColores colores, int i, int j){
-    
+    system("cls"); 
+
 }
 
 // void colorFondo(int color) {
