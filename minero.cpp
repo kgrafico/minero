@@ -5,39 +5,42 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
+
+#include "juego.h"
+#include "minero.h"
 
 using namespace std;
 
-const int MAX = 50;
-
-typedef enum {
-    LIBRE, TIERRA, GEMA, PIEDRA, MURO, SALIDA, MINERO, DINAMITA
-} tCasilla;
-
-typedef tCasilla tPlano[MAX][MAX];
-
-typedef struct {
-    tPlano plano;
-    short nfilas;
-    short ncolumnas;
-    short fila;
-    short columna;
-} tMina;
-
-typedef struct {
-    tMina mina;
-    short gemas;
-    short movimientos;
-    short tnt;
-} tJuego;
-
-typedef enum {
-     ARRIBA, ABAJO, DCHA, IZDA, SALIR, NADA, TNT
-} tTecla;
-
 const string archivosNiveles[] = {"1.txt", "2.txt", "3.txt", "4.txt"};
-char planoCaracteres[3*MAX][3*MAX];
-int planoColores[3*MAX][3*MAX];
+
+
+bool cargar_Mina(ifstream& archivo, tMina& mina) {
+    string fila;
+
+    archivo >> mina.nfilas >> mina.ncolumnas;
+    getline(archivo, fila);
+
+    if (mina.nfilas > MAX) {
+        cout << "Filas leidas (" << mina.nfilas << ") mayor que maximo (" << MAX << ")" << endl;
+        return false;
+    }
+
+    if (mina.ncolumnas > MAX) {
+        cout << "Columnas leidas (" << mina.ncolumnas << ") mayor que maximo (" << MAX << ")" << endl;
+        return false;
+    }
+
+    for (int i = 0; i < mina.nfilas; i++) {
+        getline(archivo, fila);
+        for (int j = 0; j < mina.ncolumnas; j++) {
+            mina.plano[i][j] = rellenaCasilla(fila[j]);
+        }
+    }
+
+    archivo.close();
+    return true;
+}
 
 
 tCasilla rellenaCasilla(char c) {
@@ -113,43 +116,9 @@ char pintaCaracteres(tCasilla c) {
     }
 }
 
-bool readGame(tJuego& juego, short nivel) {
-    ifstream archivo;
-    string fila;
-
-    archivo.open(archivosNiveles[nivel-1], ios::in);
-    if (!archivo.is_open()) {
-        cout << "¡No se ha podido abrir el archivo "<< archivosNiveles[nivel-1] <<"!" << endl;
-        return false;
-    }
-
-    archivo >> juego.mina.nfilas >> juego.mina.ncolumnas;
-    getline(archivo, fila);
-
-    if (juego.mina.nfilas > MAX) {
-        cout << "Filas leidas (" << juego.mina.nfilas << ") mayor que maximo (" << MAX << ")" << endl;
-        return false;
-    }
-
-    if (juego.mina.ncolumnas > MAX) {
-        cout << "Columnas leidas (" << juego.mina.ncolumnas << ") mayor que maximo (" << MAX << ")" << endl;
-        return false;
-    }
-
-    for (int i = 0; i < juego.mina.nfilas; i++) {
-        getline(archivo, fila);
-        for (int j = 0; j < juego.mina.ncolumnas; j++) {
-            juego.mina.plano[i][j] = rellenaCasilla(fila[j]);
-        }
-    }
-
-    archivo.close();
-    return true;
-}
-
-void pintaMina(tMina& mina) {
+void dibujar1_1(const tMina& mina) {
     system("cls");
-    
+
     for(int i = 0; i < mina.nfilas; i++ ) {
         for(int j = 0; j < mina.ncolumnas; j++) {
             cout << pintaCaracteres(mina.plano[i][j]);
@@ -158,48 +127,12 @@ void pintaMina(tMina& mina) {
     }
 }
 
-int showMenu() {
-    char chooseOption = 0x00;
-    
-    while (chooseOption < '0' || chooseOption > '2') {
-        cout << "1. Jugar partida escala 1:1" << endl;
-        cout << "2. Jugar partida escala 1:3" << endl;
-        cout << "0. Salir" << endl;
-        
-        cout << "Elija opción: ";
-        cin >> chooseOption;
-    }
-    
-    return chooseOption-0x30;
+void dibujar1_3(const tMina& mina){
+
 }
 
-int showTeclado() {
-    char chooseOption = 0x00;
+void dibuja3x3(tCasilla casilla, tPlanoCaracteres caracteres, tPlanoColores colores, int i, int j){
     
-    while (chooseOption < '0' || chooseOption > '2') {
-        cout << "1. Introducir movimientos por teclado" << endl;
-        cout << "2. Introducir movimientos por fichero" << endl;
-        cout << "0. Salir" << endl;
-        
-        cout << "Elija opción: ";
-        cin >> chooseOption;
-    }
-    
-    return chooseOption-0x30;
-}
-
-int showSiguienteNivel() {
-    char chooseOption = '0';
-    
-    while (chooseOption < '0' || chooseOption > '1') {
-        cout << "1. Jugar siguiente nivel" << endl;
-        cout << "0. Salir" << endl;
-        
-        cout << "Elija opción: ";
-        cin >> chooseOption;
-    }
-    
-    return chooseOption-0x30;
 }
 
 // void colorFondo(int color) {
@@ -230,38 +163,47 @@ int showSiguienteNivel() {
 //     }
 // }
 
+tTecla leerTecla() {
+    int dir;
 
-int main(int argc, const char * argv[]) {
-    tJuego juego ;
-    short nivel = 1;
-    short option = 0;
-    bool escala = false; 
+    cin.sync();
+    dir =_getch();
 
-    option = showMenu();
+    if (dir == 0xe0) {
+        dir = _getch();
+    }
 
-    switch(option) {
-        case 1:
-            escala = false; 
+    switch(dir) {
+        case 27:
+            return SALIR;
             break;
 
-        case 2:
-            escala = true; 
+        case 77:
+            return DERECHA;
+            break;
+        
+        case 72:
+            return ARRIBA;
             break;
 
-        case 3:
-            cout << "Hasta luego" << endl;
-            return 0;
+        case 80:
+            return ABAJO;
+            break;
+
+        case 75:
+            return IZQUIERDA;
+            break;
+        
+        case 'D':
+            return TNT;
             break;
 
         default:
+            return NADA;
             break;
     }
-
-    readGame(juego, nivel);
-    pintaMina(juego.mina);
-
-    return 0;
 }
+
 
 
 
