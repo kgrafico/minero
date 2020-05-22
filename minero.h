@@ -21,6 +21,12 @@
 #define BOLDWHITE   "\033[1m\033[37m"      /* Bold White */
 
 typedef enum {
+    ROJO, AZUL, VERDE, GRIS, FUEGO
+} tColor;
+
+typedef tColor tPlanoColores[3*MAX][3*MAX];
+
+typedef enum {
     LIBRE, TIERRA, GEMA, PIEDRA, MURO, SALIDA, MINERO, DINAMITA
 } tCasilla;
 

@@ -42,6 +42,30 @@ bool cargar_Mina(ifstream& archivo, tMina& mina) {
     return true;
 }
 
+tColor colorCasilla(tCasilla c) {
+    switch(c) {
+        case SALIDA:
+            return AZUL;
+            break;
+
+        case GEMA:
+            return VERDE;
+            break;
+
+        case MINERO:
+            return GRIS;
+            break;
+
+        case DINAMITA:
+            return FUEGO;
+            break;
+        
+        default:
+        return ROJO;
+        break;
+    }
+}
+
 
 tCasilla rellenaCasilla(char c) {
     switch(c) {
@@ -130,10 +154,25 @@ void dibujar1_1(const tMina& mina) {
 void dibujar1_3(const tMina& mina){
     system("cls");
 
+    for(int i = 0; i < 3; i++ ) {
+        for(int j = 0; j < 3; j++) {
+            // cout << pintaCaracteres(mina.plano[i][j]);
+            // dibuja3x3();
+        }
+        cout << endl;
+    }
+
 }
 
 void dibuja3x3(tCasilla casilla, tPlanoCaracteres caracteres, tPlanoColores colores, int i, int j){
     system("cls"); 
+
+    for(int ii = 0; ii < 3; ii++ ) {
+        for(int jj = 0; jj < 3; jj++) {
+            caracteres[i*3+ii][j*3+jj]
+        }
+        cout << endl;
+    }
 
 }
 
